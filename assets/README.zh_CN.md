@@ -60,6 +60,11 @@ python tools/generate_poetry_assets.py --check
 Flash。CairoSVG 以三倍尺寸栅格化，Pillow 用 Lanczos 缩小，再按 LVGL 顺序拼接
 RGB565 和 A8 平面。固件移动 Flash 图层对象，不分配整屏 RAM 画布或逐帧序列。
 
+[`images/poetry-preview.png`](images/poetry-preview.png) 包含实际 LVGL 主机渲染器的
+六张 240×320 截图（四个人格主页、等待、稀有诗歌）。合图 1520×376，带英文标题；
+用于审查，不是真机照片，也不链接进固件。更新预览前，通过应用主机渲染命令
+重新生成截图。
+
 ## 音乐与音效（music）
 
 可复用的音乐与音效源码放在 `music/`。

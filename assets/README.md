@@ -65,6 +65,12 @@ produce `poetry_assets.c`: 154 x 88, 24 x 22 and 106 x 26 RGB565+A8 layers,
 then concatenates RGB565 and A8 planes in LVGL order. Firmware moves Flash-backed
 objects without a full-screen RAM canvas or frame sequence.
 
+[`images/poetry-preview.png`](images/poetry-preview.png) contains six 240 x 320
+captures from the actual LVGL host renderer (four homes, waiting, a rare poem).
+The composite is 1520 x 376 with English captions; it is review evidence, not
+a device photograph, and is not linked into firmware. Regenerate captures with
+the application's host-render command before changing the preview.
+
 ## Music and sound effects
 
 Store reusable music and sound-effect sources in `music/`.
