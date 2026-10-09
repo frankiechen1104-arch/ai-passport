@@ -21,7 +21,7 @@ Store reusable font files and generated font sources in `fonts/`.
 
 `fonts/PoetrySubset-Regular.otf` is a renamed modified SC-face subset of
 [Noto Sans CJK](https://github.com/notofonts/noto-cjk), from Debian's
-`NotoSansCJK-Regular.ttc` face 2 (Google copyright, SIL OFL 1.1;
+`NotoSansCJK-Regular.ttc` face 2, version 2.004 (Adobe copyright 2014–2021, SIL OFL 1.1;
 `fonts/OFL.txt`). `fonts/poetry_font_16.c` is the Flash-resident LVGL font:
 16 px, 4 bpp plain/uncompressed, 20 px line height, 5 px baseline, no kerning.
 `fonts/poetry_symbols.txt` contains printable ASCII and all corpus/UI/error

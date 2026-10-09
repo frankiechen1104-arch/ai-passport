@@ -19,7 +19,7 @@
 
 `fonts/PoetrySubset-Regular.otf` 是来自 Debian `NotoSansCJK-Regular.ttc`
 第 2 个 SC 字面的修改重命名字体子集，来源为
-[Noto Sans CJK](https://github.com/notofonts/noto-cjk)，Google 版权所有，
+[Noto Sans CJK](https://github.com/notofonts/noto-cjk)，字体版本 2.004，Adobe 2014–2021 版权所有，
 SIL OFL 1.1 授权，见 `fonts/OFL.txt`。`fonts/poetry_font_16.c` 是 Flash 常驻
 LVGL 字体：16 px、4 bpp、不压缩、行高 20 px、基线 5 px、不启用字距调整。
 `fonts/poetry_symbols.txt` 包含可打印 ASCII 与全部语料/界面/错误字符，
