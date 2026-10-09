@@ -1,0 +1,16 @@
+{
+  "converter": "lv_font_conv 1.5.3",
+  "font_size": 16,
+  "bpp": 4,
+  "glyphs": 628,
+  "corpus_version": 1,
+  "sha256": {
+    "assets/images/poetry_otter.svg": "79b6a5d0bef1fc1e74c8ac5023415b80dfb2882c32a366c2b991cbb6f13bd131",
+    "assets/images/poetry_foot.svg": "6a4b8bfb081931ce94188fce3c2bace383ae3597a184c418ae713c4506968af6",
+    "assets/images/poetry_ripple.svg": "8c5160cd7467be51e3148acfeaff18dffbba71bef0c5f8f45f56e4b06cc28460",
+    "assets/fonts/poetry_font_16.c": "0b44bd2dad1647687f8fab3d26865f9d3fb3dbedbce43b44ebf66058f10cbf89",
+    "assets/fonts/PoetrySubset-Regular.otf": "0ca93a44b3347b41c0e83b56636bd5ef4e21532e52cafcd1f70d1832eaf7380e",
+    "assets/fonts/poetry_symbols.txt": "41a4c34e21c930da5c67cb81bc3532222c595eb739a3321217a2826f3ba57f03",
+    "assets/images/poetry_assets.c": "010df461e6a2ac316c06cc6359d683aa7cf76b62c3ef1bc97d160b9fe00364cc"
+  }
+}
