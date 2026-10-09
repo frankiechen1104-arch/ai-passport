@@ -25,6 +25,15 @@ run_static_checks() {
 
     test_dir="$(mktemp -d /tmp/ai-passport-host-tests.XXXXXX)"
     "${CC:-cc}" -std=c11 -Wall -Wextra -Werror -Imain \
+        tests/test_poetry_model.c main/poetry_model.c main/poetry_corpus.c main/poetry_input.c \
+        -o "${test_dir}/test_poetry_model"
+    "${test_dir}/test_poetry_model"
+    "${CC:-cc}" -std=c11 -Wall -Wextra -Werror -Itests/poetry_stubs -Imain \
+        tests/test_poetry_store.c main/poetry_store.c main/poetry_model.c main/poetry_corpus.c \
+        -o "${test_dir}/test_poetry_store"
+    "${test_dir}/test_poetry_store"
+    PYTHONDONTWRITEBYTECODE=1 python3 tests/test_poetry_assets.py
+    "${CC:-cc}" -std=c11 -Wall -Wextra -Werror -Imain \
         tests/test_ui_pixel_math.c main/ui_pixel_math.c \
         -o "${test_dir}/test_ui_pixel_math"
     "${test_dir}/test_ui_pixel_math"
@@ -88,6 +97,16 @@ run_firmware_checks() (
     SDKCONFIG_DEFAULTS="${repo_root}/sdkconfig.defaults" \
         idf.py -B "${validation_build_dir}" \
         -D "SDKCONFIG=${validation_build_dir}/sdkconfig" build
+    # Actual application renderer: same 24 KiB pool, glyph lookup and layers.
+    # Managed LVGL is available after the firmware build resolves dependencies.
+    cmake -S tests/poetry_lvgl -B "${validation_build_dir}/poetry-lvgl" -G Ninja \
+        -DCMAKE_BUILD_TYPE=Release >"${validation_build_dir}/poetry-lvgl.log" 2>&1
+    if ! cmake --build "${validation_build_dir}/poetry-lvgl" -j 6 \
+        >>"${validation_build_dir}/poetry-lvgl.log" 2>&1; then
+        tail -60 "${validation_build_dir}/poetry-lvgl.log"
+        return 1
+    fi
+    "${validation_build_dir}/poetry-lvgl/test_poetry_ui"
     idf.py -B "${validation_build_dir}" merge-bin \
         -o "${validation_build_dir}/FoloToy-AI-Passport-full.bin"
     python3 tools/verify_firmware.py "${validation_build_dir}"

@@ -15,6 +15,30 @@
 - 添加字库前评估 Flash 与内部 RAM 影响；ESP32-C3 无 PSRAM。
 - 不提交许可不允许分发的字库。
 
+### USELESS POETRY
+
+`fonts/PoetrySubset-Regular.otf` 是来自 Debian `NotoSansCJK-Regular.ttc`
+第 2 个 SC 字面的修改重命名字体子集，来源为
+[Noto Sans CJK](https://github.com/notofonts/noto-cjk)，Google 版权所有，
+SIL OFL 1.1 授权，见 `fonts/OFL.txt`。`fonts/poetry_font_16.c` 是 Flash 常驻
+LVGL 字体：16 px、4 bpp、不压缩、行高 20 px、基线 5 px、不启用字距调整。
+`fonts/poetry_symbols.txt` 包含可打印 ASCII 与全部语料/界面/错误字符，
+不接受任意外部文本。所有标签使用该字体；启动检查实际描述符和故意缺字反例。
+`fonts/poetry_assets.json` 记录源文件和输出哈希。
+
+使用 Pillow 12.3.0、fontTools 4.61.1、CairoSVG 2.8.2 和官方
+`lv_font_conv` 1.5.3 再生成，工具安装在忽略的 `work/` 中：
+
+```sh
+npm install --prefix work/font-tools lv_font_conv@1.5.3
+python tools/generate_poetry_assets.py --font /path/to/NotoSansCJK-Regular.ttc
+python tools/generate_poetry_assets.py --check
+```
+
+脚本校验源字体覆盖，以 `--size 16 --bpp 4 --no-compress --no-kerning --format lvgl`
+调用转换器。修改后执行[应用说明](../docs/development/useless-poetry.zh_CN.md)中的
+静态字符/来源测试与实际 LVGL 渲染测试。物理字形仍需真机验收。
+
 ## 图片（images）
 
 可复用的源图与生成的显示资产放在 `images/`。
@@ -30,6 +54,11 @@
 - 优先采用适合 240 × 320 RGB565 显示的格式，并纳入 Flash 与内部 RAM 考量。
 - 许可允许时保留可编辑源文件，并记录来源与许可。
 - 图片中不得包含设备二维码秘密、凭证或个人数据。
+
+原创 MIT 授权 `poetry_otter.svg`、`poetry_foot.svg`、`poetry_ripple.svg`
+生成 `poetry_assets.c`：154×88、24×22、106×26 RGB565+A8 图层，共 50,520 字节
+Flash。CairoSVG 以三倍尺寸栅格化，Pillow 用 Lanczos 缩小，再按 LVGL 顺序拼接
+RGB565 和 A8 平面。固件移动 Flash 图层对象，不分配整屏 RAM 画布或逐帧序列。
 
 ## 音乐与音效（music）
 

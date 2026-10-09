@@ -1,16 +1,8 @@
 idf_component_register(
-    SRCS "main.c"
-         "demo_navigation.c"
-         "ui_pixel.c"
-         "ui_pixel_math.c"
-         "demo_display.c"
-         "demo_button.c"
-         "demo_audio.c"
-         "demo_battery.c"
-         "demo_radio.c"
-         "demo_wifi.c"
-         "demo_ble.c"
-         "demo_low_power.c"
+    SRCS "poetry_app.c" "poetry_model.c" "poetry_corpus.c"
+         "poetry_input.c" "poetry_ui.c" "poetry_store.c"
+         "../assets/fonts/poetry_font_16.c"
+         "../assets/images/poetry_assets.c"
     INCLUDE_DIRS "."
-    REQUIRES bsp bt esp_event esp_hw_support esp_netif esp_timer esp_wifi nvs_flash
+    REQUIRES bsp esp_hw_support esp_timer nvs_flash
 )
