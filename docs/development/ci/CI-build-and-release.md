@@ -85,3 +85,14 @@ consistent.
 
 - Firmware publishing to the community: [publish-to-community.md](../release/publish-to-community.md)
 - Post-release follow-up: [project-completion.md](../release/project-completion.md)
+
+## Export the previously verified ST image
+
+On `feature/st-otter-pet`, manual dispatch accepts `verified_blob_sha` and
+`verified_source_commit`. With both supplied, the normal rebuild is skipped.
+The export job retrieves an uncommitted release ZIP Git blob, verifies the original
+ST image's SHA-256 and 2,338,400-byte size, checks all recorded source hashes
+against the selected source commit, and exports `st-otter-v0.1-verified` as an
+Actions artifact. A separate job with `contents: write` attaches those same files
+to the existing ST pre-release draft. The image is never committed or rebuilt.
+Leaving the blob input empty retains the existing manual build behavior.

@@ -84,3 +84,12 @@ tag 触发的 Release 只有在合并固件与它的 Release 说明一起发布�
 
 - `.github/workflows/build-firmware.yml`：本流水线定义。
 - 详见 `docs/hardware-design/AI_HARDWARE_DEVELOPMENT_GUIDE.md`（硬件/烧录细节）。
+
+## 导出先前验证的 ST 镜像
+
+`feature/st-otter-pet` 的手动运行接受 `verified_blob_sha` 和
+`verified_source_commit`。提供两项后跳过常规重新编译。导出任务读取未提交的
+发布 ZIP Git blob，验证原 ST 镜像的 SHA-256 和 2,338,400 字节大小，并将
+全部记录的源码校验值与选定提交核对，然后导出 `st-otter-v0.1-verified`
+Actions Artifact。另一个仅具备 `contents: write` 的任务把同样的文件上传至
+现有 ST 预发布草稿。镜像不会被提交或重新编译。blob 输入为空时保留原手动构建行为。
