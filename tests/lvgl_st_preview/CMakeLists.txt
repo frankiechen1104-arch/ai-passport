@@ -19,9 +19,15 @@ foreach(KIND background outfit)
             ".balign 4\n.global ${SYMBOL}\n${SYMBOL}:\n.incbin \"${ST_ROOT}/assets/images/st_otter/${KIND}_${I}.raw\"\n")
     endforeach()
 endforeach()
+foreach(I RANGE 0 5)
+    set(SYMBOL "_binary_motion_${I}_raw_start")
+    file(APPEND "${CMAKE_CURRENT_BINARY_DIR}/assets.S"
+        ".balign 4\n.global ${SYMBOL}\n${SYMBOL}:\n.incbin \"${ST_ROOT}/assets/images/st_otter/animation/motion_${I}.raw\"\n")
+endforeach()
 file(APPEND "${CMAKE_CURRENT_BINARY_DIR}/assets.S" ".section .note.GNU-stack,\"\",@progbits\n")
 add_executable(preview preview.c "${CMAKE_CURRENT_BINARY_DIR}/assets.S"
-    "${ST_ROOT}/main/st_ui.c" "${ST_ROOT}/main/st_pet.c" "${ST_ROOT}/main/st_work.c"
+    "${ST_ROOT}/main/st_ui.c" "${ST_ROOT}/main/st_pet.c" "${ST_ROOT}/main/st_work.c" "${ST_ROOT}/main/st_animation.c"
+    "${ST_ROOT}/assets/images/st_otter/animation/st_animation_art.c"
     "${ST_ROOT}/assets/fonts/st_font_16.c" "${ST_ROOT}/assets/images/st_otter/st_art.c")
-target_include_directories(preview PRIVATE "${ST_ROOT}/main" "${ST_ROOT}/assets/images/st_otter")
+target_include_directories(preview PRIVATE "${ST_ROOT}/main" "${ST_ROOT}/assets/images/st_otter" "${ST_ROOT}/assets/images/st_otter/animation")
 target_link_libraries(preview PRIVATE lvgl m)

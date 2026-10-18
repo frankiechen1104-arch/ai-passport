@@ -93,9 +93,65 @@ int main(int argc, char **argv) {
   st_round_start(&w, 0);
   st_ui_render(&s, &v, &w, 1400);
   screenshot("game_hit_zone");
+  /* Capture actual LVGL frames for a repeatable animation preview. */
+  s.coins = 180;
+  s.joy_total = 160;
+  s.high_score = 94;
+  v.reward = 25;
+  int64_t origin = 100000;
+  const st_motion_t motions[] = {
+      ST_MOTION_NONE, ST_MOTION_FEED,     ST_MOTION_BATH,   ST_MOTION_PLAY,
+      ST_MOTION_WAKE, ST_MOTION_DRESS,    ST_MOTION_TRAVEL, ST_MOTION_HIT,
+      ST_MOTION_MISS, ST_MOTION_CELEBRATE};
+  for (unsigned outfit = 0; outfit < 6; outfit++) {
+    s.outfit = outfit;
+    v.page = PAGE_HOME;
+    v.selected = 0;
+    st_ui_render(&s, &v, &w, origin - 500);
+    st_ui_render(&s, &v, &w, origin);
+    for (unsigned action = 0; action < 10; action++) {
+      v.page = action == 7 || action == 8 ? PAGE_WORK
+               : action == 9              ? PAGE_RESULT
+                                          : PAGE_HOME;
+      if (action == 4)
+        v.page = PAGE_SLEEP;
+      if (action == 1)
+        v.page = PAGE_FOOD;
+      if (action == 5)
+        v.page = PAGE_WARDROBE;
+      if (action == 7 || action == 8)
+        st_round_start(&w, origin - 1400);
+      if (action == 7)
+        st_round_strike(&w, origin);
+      if (action == 8)
+        st_round_strike(&w, origin - 500);
+      v.selected = action == 5 ? outfit : action == 3 ? 1 : action == 2 ? 2 : 0;
+      v.destination = action == 6 ? 1 : 0;
+      v.motion = action == 4 ? ST_MOTION_NONE : motions[action];
+      v.motion_started_ms = origin;
+      s.sleeping = action == 4;
+      for (unsigned f = 0; f < (action == 0 ? 100u : 36u); f++) {
+        int64_t time = origin + f * 80;
+        st_ui_render(&s, &v, &w, time);
+        lv_obj_update_layout(lv_screen_active());
+        layout(lv_screen_active());
+        if (outfit == 0 || action == 5) {
+          char name[80];
+          snprintf(name, sizeof(name), "anim_%u_%u_%03u", outfit, action, f);
+          screenshot(name);
+        }
+        lv_tick_inc(80);
+        lv_timer_handler();
+      }
+      origin += action == 0 ? 10000 : 4000;
+    }
+  }
+  s.sleeping = 0;
+  v.page = PAGE_WORK;
+  v.motion = ST_MOTION_NONE;
   /* Exercise rendering under the same 24 KB LVGL heap for 3000 frames. */
   for (unsigned i = 0; i < 3000; i++) {
-    st_ui_render(&s, &v, &w, i * 20);
+    st_ui_render(&s, &v, &w, origin + i * 20);
     lv_tick_inc(20);
     lv_timer_handler();
   }

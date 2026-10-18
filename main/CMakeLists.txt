@@ -1,7 +1,8 @@
 idf_component_register(
-    SRCS "main.c" "st_pet.c" "st_storage.c" "st_work.c" "st_ui.c" "st_controller.c"
+    SRCS "main.c" "st_pet.c" "st_storage.c" "st_work.c" "st_ui.c" "st_controller.c" "st_animation.c"
          "../assets/images/st_otter/st_art.c" "../assets/fonts/st_font_16.c"
-    INCLUDE_DIRS "." "../assets/images/st_otter"
+         "../assets/images/st_otter/animation/st_animation_art.c"
+    INCLUDE_DIRS "." "../assets/images/st_otter" "../assets/images/st_otter/animation"
     EMBED_FILES
          "../assets/images/st_otter/background_0.raw"
          "../assets/images/st_otter/background_1.raw"
@@ -17,5 +18,11 @@ idf_component_register(
          "../assets/images/st_otter/outfit_3.raw"
          "../assets/images/st_otter/outfit_4.raw"
          "../assets/images/st_otter/outfit_5.raw"
+         "../assets/images/st_otter/animation/motion_0.raw"
+         "../assets/images/st_otter/animation/motion_1.raw"
+         "../assets/images/st_otter/animation/motion_2.raw"
+         "../assets/images/st_otter/animation/motion_3.raw"
+         "../assets/images/st_otter/animation/motion_4.raw"
+         "../assets/images/st_otter/animation/motion_5.raw"
     REQUIRES bsp esp_hw_support esp_timer nvs_flash
 )

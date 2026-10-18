@@ -22,12 +22,14 @@ int main(void) {
   assert(c.view.page == PAGE_FOOD);
   key(&c, ST_BTN_OK, ST_BTN_CLICK, 1100);
   assert(c.pet.coins == 90 && c.dirty);
+  assert(c.view.motion == ST_MOTION_FEED && c.view.motion_started_ms == 1100);
   key(&c, ST_BTN_OK, ST_BTN_LONG, 2000);
   c.view.selected = 4;
   key(&c, ST_BTN_OK, ST_BTN_CLICK, 3000);
   assert(c.view.page == PAGE_WORK);
   key(&c, ST_BTN_OK, ST_BTN_PRESS, 4400);
   assert(c.work.hits == 1);
+  assert(c.view.motion == ST_MOTION_HIT);
   key(&c, ST_BTN_OK, ST_BTN_CLICK, 4600);
   assert(c.view.page == PAGE_WORK); // no double hit
   st_controller_update(&c, 63000);

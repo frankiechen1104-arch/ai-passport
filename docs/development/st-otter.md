@@ -80,3 +80,27 @@ Builds and host screenshots are not device acceptance. Pending physical checks:
 Chinese text and artwork on ST7789, RGB565 colors, three-key latency, a full
 60-second round, purchase/unlock navigation, NVS persistence after power cycling,
 long-press back, battery availability and long-running heap stability.
+
+## Animation upgrade
+
+Each of the six outfits now has twelve physical pose frames (72 frames total):
+neutral, closed eyes, touching the hood, waving, holding a fish, eating mime,
+belly rub, shake, sulk, work windup, strike and celebration. They retain the
+complete fish hood, large round belly and small closed mouth. Pose changes are
+combined with bounded breathing, small tilts and fixed-pool particles. The work
+page keeps the pet visible and shows a distinct strike or miss reaction. Travel
+backgrounds fade through black; wardrobe previews fade between outfits.
+
+Successful care, travel and outfit actions emit ephemeral animation events.
+A failed purchase/feed does not play a success animation. Animations use the
+same monotonic clock as the controller, never block input or NVS work and never
+change the save format, economy or 60-second game timing. Long-back cancels the
+current reaction. The application renders at a 40 ms target interval; actual
+board frame rate remains a physical acceptance item.
+
+Animation images are uncompressed RGB565+A8 mapped from Flash (4,534,272 bytes).
+`tools/prepare_st_animation.py` uses Pillow, NumPy and SciPy to separate the
+connected silhouettes and pack every outfit at a shared scale and foot baseline.
+The LVGL heap is 48 KB to cover effects and software image transforms. Headless
+rendering exercises every outfit/action and produces frames usable as a GIF;
+it does not prove real-device smoothness or power consumption.

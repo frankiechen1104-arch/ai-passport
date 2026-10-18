@@ -93,7 +93,7 @@ static void app_task(void *arg) {
         s_save_after = now + 10000;
       }
     }
-    if (now - last_ui >= (s_view.page == PAGE_WORK ? 20 : 100) &&
+    if (now - last_ui >= 40 &&
         bsp_lvgl_lock(100)) {
       st_ui_render(&s_pet, &s_view, &s_work, now);
       bsp_lvgl_unlock();

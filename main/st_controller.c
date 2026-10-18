@@ -1,5 +1,10 @@
 #include "st_controller.h"
 #include <string.h>
+static void motion(st_controller_t *c, st_motion_t kind, int64_t now) {
+  c->view.motion = kind;
+  c->view.motion_started_ms = now;
+  ++c->view.motion_serial;
+}
 static void notice(st_controller_t *c, const char *text, int64_t now) {
   c->view.notice = text;
   c->notice_until = now + 2500;
@@ -21,6 +26,7 @@ static void start_work(st_controller_t *c, int64_t now) {
   st_work_start(&c->pet);
   st_controller_dirty(c, now);
   st_round_start(&c->work, now);
+  c->view.motion = ST_MOTION_NONE;
   c->view.page = PAGE_WORK;
   c->view.notice = "";
 }
@@ -32,6 +38,7 @@ void st_controller_input(st_controller_t *c, const st_input_t *e) {
   }
   if (e->btn == ST_BTN_OK && e->event == ST_BTN_LONG) {
     c->ignore_ok_click = false;
+    c->view.motion = ST_MOTION_NONE;
     if (c->view.page == PAGE_WORK) {
       c->work.running = false;
       notice(c, "已退出 · 本局无奖励", now);
@@ -42,7 +49,9 @@ void st_controller_input(st_controller_t *c, const st_input_t *e) {
   if (c->view.page == PAGE_WORK) {
     if (e->btn == ST_BTN_OK && e->event == ST_BTN_PRESS) {
       c->ignore_ok_click = true;
-      notice(c, st_round_strike(&c->work, now) ? "命中！" : "再准一点", now);
+      bool hit = st_round_strike(&c->work, now);
+      motion(c, hit ? ST_MOTION_HIT : ST_MOTION_MISS, now);
+      notice(c, hit ? "命中！" : "再准一点", now);
     }
     return;
   }
@@ -78,15 +87,18 @@ void st_controller_input(st_controller_t *c, const st_input_t *e) {
       break;
     case 1:
       st_play(&c->pet);
+      motion(c, ST_MOTION_PLAY, now);
       st_controller_dirty(c, now);
       notice(c, "一起玩耍 · 快乐 +20", now);
       break;
     case 2:
       st_bath(&c->pet);
+      motion(c, ST_MOTION_BATH, now);
       st_controller_dirty(c, now);
       notice(c, "洗香香 · 清洁满满", now);
       break;
     case 3:
+      c->view.motion = ST_MOTION_NONE;
       c->pet.sleeping = 1;
       st_seal(&c->pet);
       st_controller_dirty(c, now);
@@ -112,6 +124,7 @@ void st_controller_input(st_controller_t *c, const st_input_t *e) {
   case PAGE_FOOD:
     if (st_feed(&c->pet, (st_food_t)c->view.selected)) {
       st_controller_dirty(c, now);
+      motion(c, ST_MOTION_FEED, now);
       notice(c, "好吃 · 饱饱的", now);
     } else
       notice(c, "金币不足 · 去搬砖吧", now);
@@ -121,6 +134,7 @@ void st_controller_input(st_controller_t *c, const st_input_t *e) {
       c->view.destination = c->view.selected;
       st_controller_dirty(c, now);
       home(c);
+      motion(c, ST_MOTION_TRAVEL, now);
       notice(c, "旅行打卡成功", now);
     } else
       notice(c, "金币或体力不足或未解锁", now);
@@ -128,6 +142,7 @@ void st_controller_input(st_controller_t *c, const st_input_t *e) {
   case PAGE_WARDROBE:
     if (st_buy_outfit(&c->pet, c->view.selected)) {
       st_controller_dirty(c, now);
+      motion(c, ST_MOTION_DRESS, now);
       notice(c, "穿上啦 · 鱼头帽保留", now);
     } else
       notice(c, "金币不足或快乐未解锁", now);
@@ -145,6 +160,7 @@ void st_controller_input(st_controller_t *c, const st_input_t *e) {
     st_seal(&c->pet);
     st_controller_dirty(c, now);
     home(c);
+    motion(c, ST_MOTION_WAKE, now);
     notice(c, "睡醒啦", now);
     break;
   case PAGE_RESULT:
@@ -168,6 +184,7 @@ void st_controller_update(st_controller_t *c, int64_t now) {
           st_work_finish(&c->pet, c->work.hits, c->work.best_combo);
       c->view.page = PAGE_RESULT;
       st_controller_dirty(c, now);
+      motion(c, ST_MOTION_CELEBRATE, now);
       notice(c, "辛苦啦 · 金币到账", now);
     }
   }

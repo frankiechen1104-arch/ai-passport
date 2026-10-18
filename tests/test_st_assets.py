@@ -15,4 +15,6 @@ class Assets(unittest.TestCase):
         for i in range(8):self.assertEqual((directory/f'background_{i}.raw').stat().st_size,240*320*2)
         for i in range(6):self.assertEqual((directory/f'outfit_{i}.raw').stat().st_size,128*164*3)
         self.assertEqual(len(re.findall(r'LV_IMAGE_HEADER_MAGIC',(directory/'st_art.c').read_text())),14)
+        for i in range(6):self.assertEqual((directory/f'animation/motion_{i}.raw').stat().st_size,12*128*164*3)
+        self.assertEqual(len(re.findall(r'LV_IMAGE_HEADER_MAGIC',(directory/'animation/st_animation_art.c').read_text())),72)
 if __name__=='__main__':unittest.main()

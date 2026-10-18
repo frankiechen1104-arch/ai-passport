@@ -82,6 +82,10 @@ run_static_checks() {
         tests/test_st_storage.c main/st_storage.c main/st_pet.c \
         -o "${test_dir}/test_st_storage"
     "${test_dir}/test_st_storage"
+    "${CC:-cc}" -std=c11 -Wall -Wextra -Werror -Imain \
+        tests/test_st_animation.c main/st_animation.c \
+        -o "${test_dir}/test_st_animation"
+    "${test_dir}/test_st_animation"
     PYTHONDONTWRITEBYTECODE=1 python3 tests/test_st_assets.py
     rm -rf "${test_dir}"
     echo "Host tests: PASS"

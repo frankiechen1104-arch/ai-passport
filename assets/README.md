@@ -62,3 +62,18 @@ Store reusable music and sound-effect sources in `music/`.
   coverage is recorded in `st_font_inventory.json`; regenerate after UI changes.
 
 Application behavior and acceptance: [ST Otter](../docs/development/st-otter.md).
+
+### ST animation frames
+
+`images/st_otter/animation/outfit_0..5_atlas.png` are generated pose atlases from
+the existing outfit references using the built-in image tool. They contain 12
+poses per outfit with complete blue fish headpieces and closed mouths.
+`tools/prepare_st_animation.py` (Pillow, NumPy, SciPy) packs them into six
+`motion_0..5.raw` Flash blobs; `st_animation_art.c` supplies 72 LVGL descriptors.
+Review PNGs retain each packed 128 × 164 frame. Runtime animation needs no image
+file decoder or per-frame sprite allocation. Original ST references and their
+user-supplied provenance remain unchanged.
+
+`animation/preview.gif` and `preview.png` show the real headless LVGL renderer,
+not a separate concept animation. Regenerate after running `tools/preview_st_ui.sh`
+with `python3 tools/render_st_animation_preview.py <frame-directory>` (Pillow).

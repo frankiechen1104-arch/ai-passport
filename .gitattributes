@@ -1,3 +1,4 @@
 
 # Mapped ST display resources must retain their exact byte representation.
 assets/images/st_otter/*.raw binary
+assets/images/st_otter/animation/*.raw binary

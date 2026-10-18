@@ -58,3 +58,16 @@
   界面文字修改后需重新生成。
 
 应用行为与验收：[ST 水獭](../docs/development/st-otter.zh_CN.md)。
+
+### ST 动作帧
+
+`images/st_otter/animation/outfit_0..5_atlas.png` 是使用内置图像工具基于现有
+服装参考生成的姿势图集，每套十二种动作，保留完整蓝色鱼头帽和闭唇嘴。
+`tools/prepare_st_animation.py`（Pillow、NumPy、SciPy）将其打包为六个
+`motion_0..5.raw` Flash 数据块，`st_animation_art.c` 提供 72 个 LVGL 描述符。
+PNG 用于审核打包后每张 128 × 164 帧。运行时无需图像文件解码器或逐帧创建
+精灵对象。原始 ST 参考图及用户提供来源保持不变。
+
+`animation/preview.gif` 和 `preview.png` 来自真实的主机 LVGL 渲染，不是独立概念动画。
+运行 `tools/preview_st_ui.sh` 后，使用 Pillow 执行
+`python3 tools/render_st_animation_preview.py <帧目录>` 可重新生成。
