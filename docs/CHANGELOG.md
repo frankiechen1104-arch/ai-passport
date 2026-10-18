@@ -56,3 +56,16 @@
 - Updated software-design and project README references for the new documentation structure.
 - Added the documentation catalog and task-triggered routing based on the earlier repository model.
 - Added bilingual contribution, code-of-conduct, security, and support documents tailored to this ESP-IDF and fork workflow.
+
+## st-otter-v0.1 - 2026-10-18
+
+- Introduced the offline ST Otter application with a fresh Chinese LVGL interface,
+  three-button navigation, pet care and persistent statistics.
+- Added the 60-second conveyor work game with timed hits, combos, rewards and
+  high scores, eight California travel illustrations and six purchasable outfits.
+- Preserved the complete blue fish hood, extra-round belly and small closed mouth;
+  integrated mapped artwork and a glyph-checked Chinese font subset.
+- Added versioned, checksummed NVS saves with coalesced writes and retries. Cold
+  power-off time is not estimated; sleep and decay use powered session time.
+- Prepared an ESP32-C3 / 8 MB Flash pre-release using ESP-IDF 5.5.3. The existing
+  verified merged image is published unchanged; device acceptance remains pending.

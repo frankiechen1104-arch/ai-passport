@@ -39,3 +39,22 @@
 - 与当前 BSP 音频路径匹配时优先采用 16 kHz、16 位单声道 PCM。
 - 嵌入音频前评估 Flash 与内部 RAM 成本；长录音应流式或分块。
 - 无再分发许可不提交媒体文件。
+
+## ST 水獭应用资源
+
+- `images/st_otter/*_reference.webp`：用户上传 `st_otter_v0_1_source.zip` 中
+  四张原始参考图，原样保留；使用权来自用户提供，不推定为公共授权。
+- `images/st_otter/travel_atlas.png` 和 `outfit_atlas.png`：本次使用内置图像工具
+  依据原 ST 设计与加州旅行场景生成。角色保留完整鱼头帽和闭唇嘴，背景为 UI
+  预留天空及前景区域。
+- `background_0..7` 为 240 × 320 RGB565，`outfit_0..5` 为 128 × 164
+  RGB565+A8。PNG 用于审核，`.raw` 由 CMake 嵌入，`st_art.c` 提供 LVGL 描述符。
+  使用 Pillow 运行 `tools/prepare_st_art.py` 复现。
+- `fonts/NotoSansCJKsc-Regular.otf`：从已安装 Noto CJK 字体集合提取的思源黑体
+  简体中文常规字重，来源 https://github.com/notofonts/noto-cjk。
+  `NotoSansCJK-LICENSE.txt` 包含 SIL OFL 1.1 授权条款。`st_font_16.c` 是通过
+  Pillow/FreeType 和 fontTools 运行 `tools/prepare_st_font.py` 生成的 LVGL
+  16 像素、4 位灰度、无压缩子集；`st_font_inventory.json` 记录字符覆盖，
+  界面文字修改后需重新生成。
+
+应用行为与验收：[ST 水獭](../docs/development/st-otter.zh_CN.md)。

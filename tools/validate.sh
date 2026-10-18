@@ -70,6 +70,19 @@ run_static_checks() {
     PYTHONDONTWRITEBYTECODE=1 python3 tests/test_verify_firmware.py
     PYTHONDONTWRITEBYTECODE=1 python3 tests/test_archive_firmware.py
     PYTHONDONTWRITEBYTECODE=1 python3 tests/test_install_passport_skills.py
+    "${CC:-cc}" -std=c11 -Wall -Wextra -Werror -Imain \
+        tests/test_st_pet.c main/st_pet.c main/st_work.c \
+        -o "${test_dir}/test_st_pet"
+    "${test_dir}/test_st_pet"
+    "${CC:-cc}" -std=c11 -Wall -Wextra -Werror -Imain \
+        tests/test_st_controller.c main/st_controller.c main/st_pet.c main/st_work.c \
+        -o "${test_dir}/test_st_controller"
+    "${test_dir}/test_st_controller"
+    "${CC:-cc}" -std=c11 -Wall -Wextra -Werror -Imain -Itests/st_storage_stubs \
+        tests/test_st_storage.c main/st_storage.c main/st_pet.c \
+        -o "${test_dir}/test_st_storage"
+    "${test_dir}/test_st_storage"
+    PYTHONDONTWRITEBYTECODE=1 python3 tests/test_st_assets.py
     rm -rf "${test_dir}"
     echo "Host tests: PASS"
 }
