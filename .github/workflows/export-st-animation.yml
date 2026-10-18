@@ -1,0 +1,113 @@
+name: Export ST animation preview
+
+on:
+  push:
+    branches: [feature/st-otter-pet]
+    paths: [.github/workflows/export-st-animation.yml]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: st-animation-preview-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  export_verified:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Validate source and payload identifiers
+        env:
+          SOURCE_COMMIT: fbd3523c42c1d6139b2b01f35b80e6748d8b46cf
+          BLOB_SHA: a24ca5471d7894fb48afa71bada585d688b62627
+        run: |
+          python3 - <<'PY'
+          import os, re
+          for key in ("SOURCE_COMMIT", "BLOB_SHA"):
+              if not re.fullmatch(r"[0-9a-f]{40}", os.environ[key]):
+                  raise SystemExit(f"{key} must be a complete Git object SHA")
+          PY
+
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: fbd3523c42c1d6139b2b01f35b80e6748d8b46cf
+          persist-credentials: false
+
+      - name: Retrieve and verify the animated ST firmware without rebuilding
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_API_URL: ${{ github.api_url }}
+          BLOB_SHA: a24ca5471d7894fb48afa71bada585d688b62627
+          SOURCE_COMMIT: fbd3523c42c1d6139b2b01f35b80e6748d8b46cf
+        run: |
+          python3 - <<'PY'
+          import base64, hashlib, io, json, os, pathlib, re, subprocess, urllib.request, zipfile
+          url = f"{os.environ['GH_API_URL']}/repos/{os.environ['GITHUB_REPOSITORY']}/git/blobs/{os.environ['BLOB_SHA']}"
+          request = urllib.request.Request(url, headers={
+              "Authorization": "Bearer " + os.environ["GH_TOKEN"],
+              "Accept": "application/vnd.github+json",
+              "X-GitHub-Api-Version": "2022-11-28",
+          })
+          with urllib.request.urlopen(request, timeout=60) as response:
+              blob = json.load(response)
+          if blob.get("encoding") != "base64":
+              raise SystemExit("Unexpected Git blob encoding")
+          payload = base64.b64decode(blob["content"])
+          object_hash = hashlib.sha1(b"blob " + str(len(payload)).encode() + b"\0" + payload).hexdigest()
+          if object_hash != os.environ["BLOB_SHA"]:
+              raise SystemExit("Git blob identity mismatch")
+          expected_names = {
+              "ST-Otter-AI-Passport-full.bin", "SHA256SUMS.txt",
+              "firmware-manifest.json", "firmware-source-sha256.json", "release-provenance.json",
+              "ST-Otter-animation-preview.gif", "ST-Otter-animation-preview.png", "INSTALL.txt",
+          }
+          with zipfile.ZipFile(io.BytesIO(payload)) as archive:
+              if len(archive.infolist()) != len(expected_names) or set(archive.namelist()) != expected_names:
+                  raise SystemExit("Unexpected release ZIP members")
+              if sum(item.file_size for item in archive.infolist()) > 20000000:
+                  raise SystemExit("Release ZIP exceeds the size limit")
+              files = {name: archive.read(name) for name in expected_names}
+          firmware = files["ST-Otter-AI-Passport-full.bin"]
+          expected = "2ea240da8653c6f6b95cf509e2a512f7a1cc3fd73229d8000dced63354eeab40"
+          if len(firmware) != 6500544 or hashlib.sha256(firmware).hexdigest() != expected:
+              raise SystemExit("Animated ST firmware size/hash mismatch")
+          provenance = json.loads(files["release-provenance.json"])
+          if provenance["source_commit"] != os.environ["SOURCE_COMMIT"]:
+              raise SystemExit("Source commit mismatch")
+          if subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip() != os.environ["SOURCE_COMMIT"]:
+              raise SystemExit("Checkout identity mismatch")
+          source_hashes = json.loads(files["firmware-source-sha256.json"])
+          for name, expected_hash in source_hashes.items():
+              data = subprocess.check_output(["git", "show", "HEAD:" + name])
+              if hashlib.sha256(data).hexdigest() != expected_hash:
+                  raise SystemExit("Committed firmware source mismatch: " + name)
+          for line in files["SHA256SUMS.txt"].decode().splitlines():
+              digest, name = line.split("  ", 1)
+              if name not in files or hashlib.sha256(files[name]).hexdigest() != digest:
+                  raise SystemExit("Release asset checksum mismatch")
+          output = pathlib.Path("verified-release")
+          output.mkdir(exist_ok=True)
+          for name, data in files.items():
+              (output / name).write_bytes(data)
+          summary = (
+              "## Animated ST firmware verified\n\n"
+              f"Source commit: `{os.environ['SOURCE_COMMIT']}`\n\n"
+              f"SHA-256: `{expected}`\n\n"
+              "Size: **6,500,544 bytes**. Exported without rebuilding. Device tests: NOT RUN.\n"
+          )
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a") as stream:
+              stream.write(summary)
+          print("Original firmware and committed source hashes: PASS")
+          PY
+
+      - name: Export verified firmware artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: st-otter-animation-preview
+          path: verified-release/*
+          if-no-files-found: error
+          retention-days: 90
+

@@ -96,3 +96,13 @@ against the selected source commit, and exports `st-otter-v0.1-verified` as an
 Actions artifact. A separate job with `contents: write` attaches those same files
 to the existing ST pre-release draft. The image is never committed or rebuilt.
 Leaving the blob input empty retains the existing manual build behavior.
+
+## Animation preview distribution
+
+`export-st-animation.yml` exports the verified animation-upgrade binary and real
+LVGL GIF/PNG previews as `st-otter-animation-preview`. It runs only when that
+workflow file is pushed to `feature/st-otter-pet`, or on manual dispatch. It
+checks the payload Git object, every asset checksum, the exact firmware size/hash
+and all recorded source blobs before uploading an Actions artifact. The job has
+read-only repository permission and never edits a Release, main or a device.
+The existing `st-otter-v0.1` Release is preserved.

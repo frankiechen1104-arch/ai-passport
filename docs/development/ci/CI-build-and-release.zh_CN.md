@@ -93,3 +93,12 @@ tag 触发的 Release 只有在合并固件与它的 Release 说明一起发布�
 全部记录的源码校验值与选定提交核对，然后导出 `st-otter-v0.1-verified`
 Actions Artifact。另一个仅具备 `contents: write` 的任务把同样的文件上传至
 现有 ST 预发布草稿。镜像不会被提交或重新编译。blob 输入为空时保留原手动构建行为。
+
+## 动画预览分发
+
+`export-st-animation.yml` 将已验证的动作升级固件和真实 LVGL GIF/PNG 预览
+导出为 `st-otter-animation-preview`。仅在该工作流文件推送到
+`feature/st-otter-pet` 或手动运行时触发。上传 Artifact 前会核对数据 Git 对象、
+全部附件校验和、固件准确大小及哈希，以及所有记录的源码 blob。
+任务仅具备仓库读取权限，不修改 Release、main 或设备。
+既有 `st-otter-v0.1` Release 保持不变。
